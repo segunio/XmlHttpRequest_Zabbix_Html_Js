@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<HTML>
+    <HEAD>
+        <TITLE>Zabbix Page</TITLE>
+
+        <script type="text/javascript">
+            function createRequestObject()
+            {
+                var request;
+                if (window.XMLHttpRequest)
+                {
+                    request = new XMLHttpRequest();
+                }
+                else if (window.ActiveXObject)
+                {
+                    request = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                else
+                {
+                    alert('There was a problem creating XMLHttpRequest');
+                }
+                return request;
+            }
+            ;
+            var the_object = "";
+            var stringified = "";
+            var tt;
+            var handler = function() {
+                if (http_request.readyState === 4) {
+                    if (http_request.status === 200) {
+                        the_object = eval("(" + http_request.responseText + ")");
+                        document.getElementById("zone").innerHTML = http_request.responseText;
+                        stringified = JSON.parse(http_request.responseText);
+                        document.getElementById("zone2").innerHTML = stringified.result;
+                        tt = '"' + stringified.result + '"';
+                        var http_request2 = new XMLHttpRequest();
+                        var gethostgroup = {
+                            "jsonrpc": "2.0",
+                            "method": "hostgroup.get",
+                            "params": {
+                                "output": "extend",
+                                "sortfield": "name"
+                            },
+                            "id": 1,
+                            "auth": stringified.result
+                        };
+                        var handler2 = function() {
+                            if (http_request2.readyState === 4) {
+                                if (http_request2.status === 200) {
+                                    the_object = eval("(" + http_request2.responseText + ")");
+                                    stringified = JSON.parse(http_request2.responseText);
+                                    document.getElementById("zone3").innerHTML = tt;
+                                    document.getElementById("zone4").innerHTML = http_request2.responseText;
+                                }
+                                else {
+                                    alert("There was a problem with the URL.");
+                                }
+                                http_request2 = null;
+                            }
+                        };
+                        var http_request2 = new XMLHttpRequest();
+                        http_request2.open("POST", 'http://hh.seravo.fi/zabbix/api_jsonrpc.php', true);
+                        http_request2.setRequestHeader('Content-type', 'application/json-rpc');
+                        http_request2.send(JSON.stringify(gethostgroup));
+                        http_request2.onreadystatechange = handler2;
+                        //var getMemoryUsage ={www.hh.seravo.fi/zabbix:system.cpu.load[all,avg1].last(0)}>5;
+                        var getGraphDetails = {
+                            "jsonrpc": "2.0",
+                            "method": "trigger.get",
+                            "params": {
+                                "output": "extend",
+                                "search": {"description": ""},
+                                "limit": 10
+
+                            },
+                            "host": "",
+                            "auth": stringified.result,
+                            "id": 2
+                        };
+                        var getGraphDetails = {
+                            "jsonrpc": "2.0",
+                            "method": "trigger.get",
+                            "params": {
+                                "filter": {
+                                    "host": ["Zabbix server"],
+                                    "description": ["Disk I/O is overloaded on {HOST.NAME}"]
+                                },
+                                "output": "extend"
+                            },
+                            "auth": stringified.result,
+                            "id": 2
+                        };
+                        var createCUPLoadTrigger = {
+                            "jsonrpc": "2.0",
+                            "method": "trigger.create",
+                            "params": [{
+                                    "description": "CPU_Load",
+                                    "expression": "{Zabbix server:system.cpu.util[,iowait].last(0)}>20",
+                                    "status": 0
+                                }],
+                            "auth": stringified.result,
+                            "id": 2
+                        };
+                        var getGraphDetails = {
+                            "jsonrpc": "2.0",
+                            "method": "graph.get",
+                            "params": {
+                                "output": "extend",
+                                "search": {
+                                    "name": ""
+                                },
+                                "select_items": "extend",
+                                "select_graph_items": "extend",
+                                "limit": 2
+                            },
+                            "auth": stringified.result,
+                            "id": 2
+                        };
+                        /*var getGraphDetails = {
+                         "jsonrpc": "2.0",
+                         "method": "script.get",
+                         "params": {
+                         "filter": {"name": ""},
+                         "output": "extend",
+                         "limit": 5
+                         },
+                         "auth": stringified.result,
+                         "id": 2
+                         };*/
+                        var getHistory = {
+                            "jsonrpc": "2.0",
+                            "method": "history.get",
+                            "params": {
+                                "history": 0,
+                                "itemids": ["23252"],
+                                "limit": 10,
+                                "output": "extend"
+                            },
+                            "auth": stringified.result,
+                            "id": 2
+                        };
+                        var getHistory = {
+                            "jsonrpc": "2.0",
+                            "method": "application.get",
+                            "params": {
+                                "search": {"name": ""},
+                                "output": "extend",
+                                "expandData": 1,
+                                "limit": 2
+                            },
+                            "auth":stringified.result,
+                            "id": 2
+                        };
+                        var handler3 = function() {
+                            if (http_request3.readyState === 4) {
+                                if (http_request3.status === 200) {
+                                    the_object = eval("(" + http_request3.responseText + ")");
+                                    stringified = JSON.parse(http_request3.responseText);
+                                    document.getElementById("zone5").innerHTML = http_request3.responseText;
+                                }
+                                else {
+                                    alert("There was a problem with the URL.");
+                                }
+                                http_request3 = null;
+                            }
+                        };
+                        var http_request3 = new XMLHttpRequest();
+                        http_request3.open("POST", 'http://hh.seravo.fi/zabbix/api_jsonrpc.php', true);
+                        http_request3.setRequestHeader('Content-type', 'application/json-rpc');
+                        http_request3.send(JSON.stringify(getHistory));
+                        http_request3.onreadystatechange = handler3;
+                    } else {
+                        alert("There was a problem with the URL.");
+                    }
+                    http_request = null;
+                }
+
+            };
+            var http_request = new XMLHttpRequest();
+            var jsonrpc = {"jsonrpc": "2.0", "method": "user.login", "params": {"user": "Admin", "password": "zabbix"}, "id": 1};
+            http_request.open("POST", 'http://hh.seravo.fi/zabbix/api_jsonrpc.php', true);
+            http_request.setRequestHeader('Content-type', 'application/json-rpc');
+            http_request.send(JSON.stringify(jsonrpc));
+            http_request.onreadystatechange = handler;
+
+
+        </script>
+    </HEAD>
+    <BODY>
+        <div id="zone"></div>
+        <br>
+        <div id="zone2"></div>
+        <br>
+        <div id="zone3"></div>
+        <br>
+        <div id="zone4"></div>
+        <br>
+        <div id="zone5"></div>
+    </BODY>
+</HTML>
